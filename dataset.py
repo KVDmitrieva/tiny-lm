@@ -30,7 +30,7 @@ class TextDataset(Dataset):
 
         self.pad_id, self.unk_id, self.bos_id, self.eos_id = \
             self.sp_model.pad_id(), self.sp_model.unk_id(), \
-                self.sp_model.bos_id(), self.sp_model.eos_id()
+            self.sp_model.bos_id(), self.sp_model.eos_id()
         self.max_length = max_length
         self.vocab_size = self.sp_model.vocab_size()
 

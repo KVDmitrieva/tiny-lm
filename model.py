@@ -55,7 +55,7 @@ class MightyLanguageModel(nn.Module):
         enc_prefix = [dataset.bos_id] + dataset.sp_model.encode(prefix)
         tokens = torch.tensor(enc_prefix).unsqueeze(0).to(device)
 
-        while tokens.shape[1] < self.max_length:
+        while tokens.shape[1] < self.max_len:
             logits = self.net(tokens) / temp
             new_tokens = Categorical(logits=logits[:, -1:]).sample()
             tokens = torch.cat([tokens, new_tokens], dim=1)
