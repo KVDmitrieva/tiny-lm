@@ -9,7 +9,7 @@ from dataset import TextDataset
 from train import train
 
 
-BATCH_SIZE = 64
+BATCH_SIZE = 48
 TRAIN_SIZE = 0.1
 VOCAB_SIZE = 16000
 MAX_LEN = 1024
