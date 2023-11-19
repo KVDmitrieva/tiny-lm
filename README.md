@@ -29,4 +29,4 @@ def process_file(input_file, output_file):
         f.writelines('\n'.join(all_texts))
 ```
 
-training script 
+training script is working with processed files. For final model processing will be implemented in `main.py`.
