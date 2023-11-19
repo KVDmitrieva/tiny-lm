@@ -71,3 +71,7 @@ def main():
 
     torch.save(state, "model.pth")
     print("Saving current model...")
+
+
+if __name__ == '__main__':
+    main()
