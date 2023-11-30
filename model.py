@@ -1,3 +1,5 @@
+import math
+
 import torch
 import numpy as np
 from torch import nn
@@ -30,22 +32,25 @@ class MightyLanguageModel(nn.Module):
     def __init__(self, vocab_size, max_len, pad_idx, n_layers=1,
                  embed_dim=128, n_head=4, hidden_dim=256, dropout=0.1):
         super().__init__()
-
+        self.pad_idx = pad_idx
         self.max_len = max_len
+        self.embed_dim = embed_dim
 
         enc_layer = nn.TransformerEncoderLayer(
             d_model=embed_dim, nhead=n_head, dim_feedforward=hidden_dim,
             dropout=dropout, batch_first=True, norm_first=True
         )
-        self.net = nn.Sequential(
-            nn.Embedding(vocab_size, embed_dim, padding_idx=pad_idx),
-            PositionalEncoding(embed_dim, max_len),
-            nn.TransformerEncoder(enc_layer, num_layers=n_layers),
-            nn.Linear(embed_dim, vocab_size)
-        )
+        self.embedding = nn.Embedding(vocab_size, embed_dim, padding_idx=pad_idx)
+        self.pos_enc = PositionalEncoding(embed_dim, max_len)
+        self.encoder = nn.TransformerEncoder(enc_layer, num_layers=n_layers)
+        self.classifier = nn.Linear(embed_dim, vocab_size)
 
-    def forward(self, x) -> Tensor:
-        return self.net(x)
+    def forward(self, tokens: Tensor) -> Tensor:
+        padding_mask = (tokens == self.pad_idx).unsqueeze(1).repeat(1, tokens.shape[-1], 1)
+        x = self.embedding(tokens) * math.sqrt(self.embed_dim)
+        x = self.pos_enc(x)
+        x = self.encoder(src=x, mask=padding_mask)
+        return self.classifier(x)
 
     @torch.inference_mode()
     def inference(self, dataset, prefix: str = '', temp: float = 1.) -> str:

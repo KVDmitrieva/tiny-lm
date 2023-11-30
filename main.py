@@ -11,11 +11,11 @@ from train import train
 
 BATCH_SIZE = 48
 TRAIN_SIZE = 0.1
-VOCAB_SIZE = 16000
+VOCAB_SIZE = 4000
 MAX_LEN = 1024
 
-TRAIN_PATH = '/kaggle/input/tiny-stories-ds/TinyStoriesV3-GPT4-train.txt'
-VALID_PATH = '/kaggle/input/tiny-stories-ds/TinyStoriesV3-GPT4-valid.txt'
+TRAIN_PATH = 'data/train.txt'
+VALID_PATH = 'data/val.txt'
 
 NUM_EPOCHS = 5
 
@@ -35,7 +35,7 @@ def init_weights(model):
         if len(param.data.shape) >= 2:
             nn.init.xavier_normal_(param.data, gain=sqrt(EMBED_DIM))
         else:
-            nn.init.normal_(param.data, mean=0.0, std=0.1)
+            nn.init.normal_(param.data, mean=0.0, std=0.01)
 
 
 def main():

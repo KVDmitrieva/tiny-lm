@@ -54,4 +54,3 @@ class TextDataset(Dataset):
         padded = torch.full((self.max_length,), self.pad_id)
         padded[:length] = torch.tensor(indices)
         return padded, length
-
