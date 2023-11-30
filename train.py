@@ -26,7 +26,6 @@ def train_epoch(model, optimizer, criterion, dataloader):
 def evaluate_epoch(model, criterion, dataloader):
     history_loss = 0.0
     device = next(model.parameters()).device
-    pad_token = dataloader.dataset.pad_id
 
     model.eval()
     for padded_seq, lengths in tqdm(dataloader, desc="Val epoch", leave=False):
