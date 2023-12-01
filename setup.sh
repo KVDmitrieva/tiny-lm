@@ -1,3 +1,5 @@
+#!/bin/bash
+
 echo "Download data"
 mkdir data
 wget "https://huggingface.co/datasets/roneneldan/TinyStories/resolve/main/TinyStories-train.txt?download=true" -O data/train_raw.txt
