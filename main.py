@@ -12,7 +12,7 @@ from train import train
 BATCH_SIZE = 48
 TRAIN_SIZE = 0.1
 VOCAB_SIZE = 4000
-MAX_LEN = 1024
+MAX_LEN = 256
 
 TRAIN_PATH = 'data/train.txt'
 VALID_PATH = 'data/val.txt'

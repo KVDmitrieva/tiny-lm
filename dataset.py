@@ -48,7 +48,11 @@ class TextDataset(Dataset):
         return len(self.indices)
 
     def __getitem__(self, item):
-        indices = [self.bos_id] + self.indices[item] + [self.eos_id]
+        indices = self.indices[item]
+        if len(indices) > self.max_length - 2:
+            indices = indices[:self.max_length - 2]
+
+        indices = [self.bos_id] + indices + [self.eos_id]
         length = len(indices)
 
         padded = torch.full((self.max_length,), self.pad_id)

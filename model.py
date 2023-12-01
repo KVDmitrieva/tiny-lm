@@ -46,10 +46,9 @@ class MightyLanguageModel(nn.Module):
         self.classifier = nn.Linear(embed_dim, vocab_size)
 
     def forward(self, tokens: Tensor) -> Tensor:
-        padding_mask = (tokens == self.pad_idx).unsqueeze(1).repeat(1, tokens.shape[-1], 1)
         x = self.embedding(tokens) * math.sqrt(self.embed_dim)
         x = self.pos_enc(x)
-        x = self.encoder(src=x, mask=padding_mask)
+        x = self.encoder(x, src_key_padding_mask=tokens == self.pad_idx)
         return self.classifier(x)
 
     @torch.inference_mode()
