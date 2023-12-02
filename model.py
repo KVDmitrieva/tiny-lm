@@ -60,7 +60,8 @@ class MightyLanguageModel(nn.Module):
         tokens = torch.tensor(enc_prefix).unsqueeze(0).to(device)
 
         while tokens.shape[1] < self.max_len:
-            logits = self.net(tokens) / temp
+            emb = self.pos_enc(self.embedding(tokens) * math.sqrt(self.embed_dim))
+            logits = self.classifier(self.encoder(emb)) / temp
             new_tokens = Categorical(logits=logits[:, -1:]).sample()
             tokens = torch.cat([tokens, new_tokens], dim=1)
             if new_tokens.item() == dataset.eos_id:

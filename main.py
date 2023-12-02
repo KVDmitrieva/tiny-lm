@@ -1,4 +1,6 @@
 import torch
+import argparse
+import wandb
 
 from torch import nn
 from math import sqrt
@@ -9,7 +11,7 @@ from dataset import TextDataset
 from train import train
 
 
-BATCH_SIZE = 48
+BATCH_SIZE = 512
 TRAIN_SIZE = 0.1
 VOCAB_SIZE = 4000
 MAX_LEN = 256
@@ -38,7 +40,12 @@ def init_weights(model):
             nn.init.normal_(param.data, mean=0.0, std=0.01)
 
 
-def main():
+def main(key):
+    log_wandb = key is not None
+    if log_wandb:
+        wandb.login(key=key)
+        wandb.init(project="small_lm")
+
     print("Preparing data")
     train_data = TextDataset(data_file=TRAIN_PATH, vocab_size=VOCAB_SIZE, text_ratio=TRAIN_SIZE, max_length=MAX_LEN)
     val_data = TextDataset(data_file=VALID_PATH, max_length=MAX_LEN)
@@ -59,7 +66,7 @@ def main():
     criterion = torch.nn.CrossEntropyLoss()
 
     print("Start training")
-    train(lm_model, optimizer, criterion, train_loader, valid_loader, scheduler, NUM_EPOCHS, verbose=True)
+    train(lm_model, optimizer, criterion, train_loader, valid_loader, scheduler, NUM_EPOCHS, verbose=True, log_wandb=True)
 
     arch = type(lm_model).__name__
     state = {
@@ -74,4 +81,13 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    args = argparse.ArgumentParser(description="PyTorch Template")
+    args.add_argument(
+        "-k",
+        "--key",
+        default=None,
+        type=str,
+        help="wandb key for logging",
+    )
+    args = args.parse_args()
+    main(args.key)

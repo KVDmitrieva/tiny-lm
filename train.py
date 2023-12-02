@@ -56,8 +56,8 @@ def train(model, optimizer, criterion, train_loader, val_loader,
             wandb.log({
                 "train loss": train_loss,
                 "val loss": val_loss,
-                "generated text": text_sample,
-                "generated text with prefix": text_with_prefix
+                "training_samples": wandb.Html(f"<span style='color:grey;'>{text_sample}</span>"),
+                "training_samples_with_prefix": wandb.Html(f"<span style='color:grey;'>{text_with_prefix}</span>")
             })
 
         if verbose:
