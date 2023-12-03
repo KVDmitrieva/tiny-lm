@@ -20,22 +20,23 @@ def get_grad_norm(model, norm_type=2):
     return total_norm.item()
 
 
-def train_epoch(model, optimizer, criterion, dataloader, scaler, scheduler=None):
+def train_epoch(model, optimizer, criterion, dataloader, scaler, iter_accum=2):
     history_loss = 0.0
     device = next(model.parameters()).device
     amp_device = device if device == "cpu" else "cuda"
 
     model.train()
     for i, (padded_seq, lengths) in enumerate(tqdm(dataloader, desc="Train epoch", leave=False)):
-        optimizer.zero_grad()
         with torch.autocast(device_type=amp_device, dtype=torch.bfloat16, enabled=True):
             tokens = padded_seq[:, :lengths.max()].to(device)
             logits = model(tokens[:, :-1])
-            loss = criterion(logits.transpose(1, 2), tokens[:, 1:])
+            loss = criterion(logits.transpose(1, 2), tokens[:, 1:]) / iter_accum
 
         scaler.scale(loss).backward()
-        scaler.step(optimizer)
-        scaler.update()
+        if (i + 1) % iter_accum == 0:
+            scaler.step(optimizer)
+            scaler.update()
+            optimizer.zero_grad()
 
         history_loss += loss.item() * len(lengths)
 
