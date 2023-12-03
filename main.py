@@ -12,7 +12,7 @@ from train import train
 
 
 BATCH_SIZE = 256
-TRAIN_SIZE = 1.0
+TRAIN_SIZE = 0.01
 VOCAB_SIZE = 4000
 MAX_LEN = 256
 
