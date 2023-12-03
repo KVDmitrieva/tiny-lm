@@ -96,3 +96,14 @@ def train(model, optimizer, criterion, train_loader, val_loader,
 
         if scheduler is not None:
             scheduler.step()
+
+        arch = type(model).__name__
+
+        state = {
+            "arch": arch,
+            "state_dict": model.state_dict(),
+            "optimizer": optimizer.state_dict()
+        }
+        if epoch % 2 == 0:
+            torch.save(state, f"checkpoint_{epoch + 1}.pth")
+            print("Saving checkpoint...")
