@@ -49,6 +49,7 @@ class MightyLanguageModel(nn.Module):
         x = self.embedding(tokens) * math.sqrt(self.embed_dim)
         x = self.pos_enc(x)
         src_mask = nn.Transformer.generate_square_subsequent_mask(len(tokens)).to(x.device)
+        print(tokens.shape, src_mask.shape)
         x = self.encoder(x, src_mask, src_key_padding_mask=tokens == self.pad_idx, is_causal=True)
         return self.classifier(x)
 
