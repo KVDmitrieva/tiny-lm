@@ -21,15 +21,13 @@ VALID_PATH = 'data/val.txt'
 
 NUM_EPOCHS = 5
 
-EMBED_DIM = 64
-HIDDEN_DIM = 128
-N_LAYERS = 1
+EMBED_DIM = 512
+HIDDEN_DIM = 2048
+N_LAYERS = 4
 N_HEAD = 4
 DROPOUT = 0.1
 
-LR = 4e-3
-GAMMA = 0.1
-MILESTONE = [3, 7, 10, 13]
+LR = 3e-4
 
 
 def init_weights(model):
@@ -57,23 +55,24 @@ def main(key):
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
     lm_model = MightyLanguageModel(vocab_size=VOCAB_SIZE, max_len=MAX_LEN, pad_idx=train_data.pad_id, n_layers=N_LAYERS,
-                                   embed_dim=EMBED_DIM, n_head=N_HEAD, hidden_dim=HIDDEN_DIM, dropout=DROPOUT).to(device)
+                                   embed_dim=EMBED_DIM, n_head=N_HEAD, hidden_dim=HIDDEN_DIM, dropout=DROPOUT).to(
+        device)
 
     lm_model.apply(init_weights)
 
-    optimizer = torch.optim.Adam(lm_model.parameters(), lr=LR)
-    scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=LR, total_steps=NUM_EPOCHS)
-    criterion = torch.nn.CrossEntropyLoss()
+    print(lm_model)
+
+    optimizer = torch.optim.AdamW(lm_model.parameters(), lr=LR)
+    criterion = torch.nn.CrossEntropyLoss(ignore_index=train_data.pad_id)
 
     print("Start training")
-    train(lm_model, optimizer, criterion, train_loader, valid_loader, scheduler, NUM_EPOCHS, verbose=True, log_wandb=True)
-
+    train(lm_model, optimizer, criterion, train_loader, valid_loader, num_epoch=NUM_EPOCHS, verbose=True,
+          log_wandb=True)
     arch = type(lm_model).__name__
     state = {
         "arch": arch,
         "state_dict": lm_model.state_dict(),
-        "optimizer": optimizer.state_dict(),
-        "lr_scheduler": scheduler.state_dict()
+        "optimizer": optimizer.state_dict()
     }
 
     torch.save(state, "model.pth")
