@@ -66,7 +66,7 @@ def train(model, optimizer, criterion, train_loader, val_loader,
     train_history, val_history = [], []
     scaler = GradScaler(enabled=True)
     for epoch in range(num_epoch):
-        train_loss = train_epoch(model, optimizer, criterion, train_loader, scaler, scheduler)
+        train_loss = train_epoch(model, optimizer, criterion, train_loader, scaler)
         val_loss = evaluate_epoch(model, criterion, val_loader, scaler)
 
         train_history.append(train_loss)
