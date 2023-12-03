@@ -27,7 +27,7 @@ def train_epoch(model, optimizer, criterion, dataloader, scaler, iter_accum=2):
 
     model.train()
     for i, (padded_seq, lengths) in enumerate(tqdm(dataloader, desc="Train epoch", leave=False)):
-        with torch.autocast(device_type=amp_device, dtype=torch.bfloat16, enabled=True):
+        with torch.autocast(device_type=amp_device, dtype=torch.float16, enabled=True):
             tokens = padded_seq[:, :lengths.max()].to(device)
             logits = model(tokens[:, :-1])
             loss = criterion(logits.transpose(1, 2), tokens[:, 1:]) / iter_accum
@@ -51,7 +51,7 @@ def evaluate_epoch(model, criterion, dataloader, scaler):
 
     model.eval()
     for i, (padded_seq, lengths) in enumerate(tqdm(dataloader, desc="Val epoch", leave=False)):
-        with torch.autocast(device_type=amp_device, dtype=torch.bfloat16, enabled=True):
+        with torch.autocast(device_type=amp_device, dtype=torch.float16, enabled=True):
             tokens = padded_seq[:, :lengths.max()].to(device)
             logits = model(tokens[:, :-1])
             loss = criterion(logits.transpose(1, 2), tokens[:, 1:])
