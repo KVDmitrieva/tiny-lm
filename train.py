@@ -30,7 +30,7 @@ def train_epoch(model, optimizer, criterion, dataloader, scaler, iter_accum=2):
         with torch.autocast(device_type=amp_device, dtype=torch.float16, enabled=True):
             tokens = padded_seq[:, :lengths.max()].to(device)
             logits = model(tokens[:, :-1])
-            loss = criterion(logits.transpose(1, 2), tokens[:, 1:]) / iter_accum
+            loss = criterion(logits[:, :-1].reshape(-1, logits.shape[-1]), tokens[:, 1:].reshape(-1)) / iter_accum
 
         scaler.scale(loss).backward()
         if (i + 1) % iter_accum == 0:
@@ -54,7 +54,7 @@ def evaluate_epoch(model, criterion, dataloader, scaler):
         with torch.autocast(device_type=amp_device, dtype=torch.float16, enabled=True):
             tokens = padded_seq[:, :lengths.max()].to(device)
             logits = model(tokens[:, :-1])
-            loss = criterion(logits.transpose(1, 2), tokens[:, 1:])
+            loss = criterion(logits[:, :-1].reshape(-1, logits.shape[-1]), tokens[:, 1:].reshape(-1))
 
         history_loss += loss.item() * len(lengths)
 
