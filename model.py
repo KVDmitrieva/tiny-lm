@@ -48,8 +48,7 @@ class MightyLanguageModel(nn.Module):
     def forward(self, tokens: Tensor) -> Tensor:
         x = self.embedding(tokens) * math.sqrt(self.embed_dim)
         x = self.pos_enc(x)
-        src_mask = nn.Transformer.generate_square_subsequent_mask(len(tokens)).to(x.device)
-        print(tokens.shape, src_mask.shape)
+        src_mask = nn.Transformer.generate_square_subsequent_mask(tokens.shape[1]).to(x.device)
         x = self.encoder(x, src_mask, src_key_padding_mask=tokens == self.pad_idx, is_causal=True)
         return self.classifier(x)
 
